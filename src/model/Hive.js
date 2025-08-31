@@ -12,6 +12,7 @@ const hiveSchema = new mongoose.Schema({
     ref: 'Beekeeper',
     required: true
   },
+  id: { type: String, unique: true },
   hiveName: { type: String, required: true },
   hiveType: { type: String, required: true },
   installationDate: { type: Date, required: true },

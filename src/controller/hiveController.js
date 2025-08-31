@@ -75,10 +75,13 @@ exports.createHive = tryCatch(async (req, res) => {
     
     // Extract beekeeper email (try multiple sources)
     const beekeeperEmail = req.user.email || beekeeper.email;
+
+    const hiveId = await generateHiveId();
     
     // Create hive with beekeeper details
     const hive = new Hive({ 
         ...hiveData, 
+        id: hiveId,  
         beekeeper: beekeeper._id,      
         beekeeperEmail: beekeeper.email,
         //id: generateUniqueHiveId() 
@@ -393,5 +396,20 @@ exports.deleteHive = tryCatch(async (req, res) => {
     });
   }
 });
+
+const generateHiveId = async () => {
+  // Find the hive with the highest ID
+  const lastHive = await Hive.findOne().sort({ id: -1 });
+  let nextNumber = 1;
+
+  if (lastHive?.id) {
+    // Extract numeric part and increment
+    const lastNumber = parseInt(lastHive.id.replace('H', ''), 10);
+    nextNumber = lastNumber + 1;
+  }
+
+  // Format to 4 digits with leading zeros
+  return `H${nextNumber.toString().padStart(4, '0')}`;
+};
 
 module.exports = exports;
