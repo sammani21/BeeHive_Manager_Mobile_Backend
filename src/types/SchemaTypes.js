@@ -1,47 +1,3 @@
-/** 
-Passenger interface
-@interface
-@extends Document
-*/
-function Issue(){
-   /**
-    * Incident type
-    * @type {string}
-    */
-   this.incidentType = "";
-   
-   /**
-    * Type of the issue
-    * @type {string}
-    */
-   this.type = "";
-   
-   /**
-    * Description of the issue
-    * @type {string}
-    */
-   this.description = "";
-   
-   /**
-    * Rerouting status
-    * @type {boolean}
-    */
-   this.rerouting = false;
-   
-   /**
-    * New vehicle number for rerouting
-    * @type {string}
-    */
-   this.reroutingNewVehicleNo = "";
-   
-   /**
-    * New driver number for rerouting
-    * @type {string}
-    */
-   this.reroutingNewDriverNo = "";
-   
-}
-
 
 /**
  * Driver interface
@@ -129,4 +85,4 @@ function Beekeeper() {
 
 }
 
-module.exports = { Beekeeper: Beekeeper, Issue: Issue };
+module.exports = { Beekeeper: Beekeeper};

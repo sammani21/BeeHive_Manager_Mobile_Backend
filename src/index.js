@@ -8,7 +8,7 @@ const errorHandler = require('./middlewares/ErrorHandler');
 const bodyParser = require('body-parser');
 //const authRoutes = require('./routes/auth.route');
 const beekeeperRoute = require('./routes/beekeeper.route');
-const issueRoute = require('./routes/issue.route');
+//const issueRoute = require('./routes/issue.route');
 const chatRoutes = require('./routes/chatRoutes');
 const hiveRoutes = require('./routes/hiveRoutes');
 const productRoutes = require('./routes/productRoute');
@@ -51,7 +51,7 @@ app.use(express.json());
 // Routes
 //app.use('/auth', authRoutes);
 app.use("/api/v1/beekeeper", beekeeperRoute);
-app.use("/api/v1/issue", issueRoute);
+//app.use("/api/v1/issue", issueRoute);
 app.use('/api/v1/chat', chatRoutes);
 app.use('/api/v1/hive', hiveRoutes);
 app.use('/api/v1/product', productRoutes);

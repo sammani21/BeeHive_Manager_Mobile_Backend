@@ -15,9 +15,9 @@ const productSchema = new mongoose.Schema({
     required: true 
   },
 
-  description: { type: String }, // Optional details about product
+  description: { type: String }, 
 
-  quantity: { type: Number, required: true }, // numeric quantity
+  quantity: { type: Number, required: true }, 
 
   unit: { 
     type: String, 
@@ -25,11 +25,11 @@ const productSchema = new mongoose.Schema({
     default: "kg" 
   },
 
-  price: { type: Number, required: true }, // per unit price
+  price: { type: Number, required: true }, 
 
-  harvestDate: { type: Date, required: true }, // when harvested
+  harvestDate: { type: Date, required: true }, 
 
-  expiryDate: { type: Date }, // optional, if perishable
+  expiryDate: { type: Date }, 
 
   qualityGrade: { 
     type: String, 
@@ -37,12 +37,12 @@ const productSchema = new mongoose.Schema({
     default: "Unspecified" 
   },
 
-  originLocation: { type: String }, // location of harvest
+  originLocation: { type: String }, 
 
-  // Extra attributes depending on product type
-  moistureContent: { type: Number }, // % moisture (for honey)
-  waxColor: { type: String }, // for beeswax e.g. "yellow", "white"
-  pollenSource: { type: String }, // e.g. "coconut", "mango flowers"
+  
+  moistureContent: { type: Number }, 
+  waxColor: { type: String }, 
+  pollenSource: { type: String }, 
   
 }, { timestamps: true });
 

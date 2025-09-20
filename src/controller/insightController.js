@@ -2,11 +2,8 @@ const Product = require('../model/Product'); // Create Product model (see below)
 const BeekeeperModel = require('../model/beekeeper.model');
 const tryCatch = require("../utils/TryCatch");
 const PDFDocument = require("pdfkit");
-//const Product = require("../model/Product");
 
-// ==========================
 // Get all products for logged-in beekeeper
-// ==========================
 exports.getMyProducts = tryCatch(async (req, res) => {
   try {
     if (!req.user) {
@@ -50,9 +47,8 @@ exports.getMyProducts = tryCatch(async (req, res) => {
   }
 });
 
-// ==========================
+
 // Create new product
-// ==========================
 exports.createProduct = tryCatch(async (req, res) => {
   try {
     if (!req.user) {
@@ -137,9 +133,8 @@ exports.createProduct = tryCatch(async (req, res) => {
   }
 });
 
-// ==========================
+
 // Update product
-// ==========================
 exports.updateProduct = tryCatch(async (req, res) => {
   try {
     if (!req.user) {
@@ -190,9 +185,8 @@ exports.updateProduct = tryCatch(async (req, res) => {
   }
 });
 
-// ==========================
+
 // Delete product
-// ==========================
 exports.deleteProduct = tryCatch(async (req, res) => {
   try {
     if (!req.user) {
@@ -242,61 +236,8 @@ exports.deleteProduct = tryCatch(async (req, res) => {
   }
 });
 
-// ==========================
-// Download PDF report
-// ==========================
-/*exports.downloadReport = tryCatch(async (req, res) => {
-  try {
-    if (!req.user) {
-      return res.status(401).json({ msg: "Authentication required" });
-    }
 
-    const beekeeper = await BeekeeperModel.findOne({ username: req.user.username });
-    if (!beekeeper) {
-      return res.status(404).json({ msg: "Beekeeper not found" });
-    }
-
-    const { startDate, endDate } = req.query;
-
-    const query = { beekeeper: beekeeper._id };
-    if (startDate && endDate) {
-      query.harvestDate = {
-        $gte: new Date(startDate),
-        $lte: new Date(endDate),
-      };
-    }
-
-    const products = await Product.find(filter).sort({ date: -1 });
-
-    // PDF generation
-    const doc = new PDFDocument();
-    res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", "attachment; filename=production-report.pdf");
-    doc.pipe(res);
-
-    doc.fontSize(20).text("BeeHive Production Report", { align: "center" });
-    doc.moveDown();
-
-    if (products.length === 0) {
-      doc.fontSize(14).text("No products found for the selected range.");
-    } else {
-      products.forEach((p, i) => {
-        doc.fontSize(12).text(
-          `${i + 1}. ${p.productName} (${p.productType}) - ${p.quantity} ${p.unit} | Harvested: ${p.harvestDate.toDateString()}`
-        );
-      });
-    }
-
-    doc.end();
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Failed to generate report" });
-  }
-});*/
-
-// ==========================
 // Marketing insights generator
-// ==========================
 const generateProductRecommendation = (product) => {
   const qty = parseInt(product.quantity) || 0;
   const month = new Date(product.harvestDate || product.date).getMonth() + 1;
@@ -360,9 +301,7 @@ const generateProductRecommendation = (product) => {
   return tips.join("\n\n");
 };
 
-// ==========================
 // Get single product by ID
-// ==========================
 exports.getProduct = async (req, res) => {
   try {
     const { id } = req.params;
@@ -406,7 +345,7 @@ exports.downloadReport = async (req, res) => {
     let startDate, endDate, reportTitle, filename;
 
     if (month) {
-      // ✅ Monthly report
+      //  Monthly report
       const selectedMonth = parseInt(month);
       startDate = new Date(selectedYear, selectedMonth - 1, 1);
       endDate = new Date(selectedYear, selectedMonth, 0, 23, 59, 59);
@@ -414,7 +353,7 @@ exports.downloadReport = async (req, res) => {
       reportTitle = `BeeHive Production Report - ${startDate.toLocaleString("default", { month: "long" })} ${selectedYear}`;
       filename = `report-${selectedYear}-${selectedMonth}.pdf`;
     } else {
-      // ✅ Yearly report
+      //  Yearly report
       startDate = new Date(selectedYear, 0, 1);
       endDate = new Date(selectedYear, 11, 31, 23, 59, 59);
 

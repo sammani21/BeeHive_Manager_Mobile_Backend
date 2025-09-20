@@ -7,7 +7,7 @@ const treatmentSchema = new mongoose.Schema({
 }, { _id: false });
 
 const hiveSchema = new mongoose.Schema({
-  beekeeper: { // updated from `no` for clarity
+  beekeeper: { 
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Beekeeper',
     required: true

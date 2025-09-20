@@ -6,7 +6,6 @@ const sendEmail = require('../utils/sendEmail'); // adjust the path if needed
 const Recommendation = require('../model/Recommendation');
 
 // Get all hives for logged-in user
-// Get all hives for logged-in user
 exports.getMyHives = tryCatch(async (req, res) => {
   try {
     // Check if user is authenticated

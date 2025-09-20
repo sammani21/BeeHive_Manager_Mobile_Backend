@@ -23,7 +23,7 @@ const taskSchema = new mongoose.Schema({
   dueDate: {
     type: Date,
     validate: {
-      validator: function(value) {
+      validator: function (value) {
         return !value || value > Date.now();
       },
       message: 'Due date must be in the future'
@@ -43,13 +43,14 @@ const taskSchema = new mongoose.Schema({
     default: Date.now
   }
 });
-// Update the updatedAt field before saving
-taskSchema.pre('save', function(next) {
+
+// Update updatedAt automatically
+taskSchema.pre('save', function (next) {
   this.updatedAt = Date.now();
   next();
 });
 
-// Index for better query performance
+// Add compound index for query optimization
 taskSchema.index({ beekeeper: 1, status: 1 });
 
 module.exports = mongoose.model('Task', taskSchema);

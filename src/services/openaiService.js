@@ -4,7 +4,7 @@ require('dotenv').config();
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-// Beekeeping knowledge base - you can expand this with your specific resources
+// Beekeeping knowledge base
 const BEEKEEPING_KNOWLEDGE = `
 You are BeeBuddy, an expert assistant specialized in beekeeping and honey production. 
 You have extensive knowledge about:
@@ -28,105 +28,110 @@ Important guidelines:
 - Provide practical, actionable advice when possible
 `;
 
+/**
+ * Mock fallback response for offline/demo mode
+ */
+function getMockResponse(message) {
+  return `🐝 (Mock) BeeBuddy here! I received your message: "${message}". 
+Since the AI service is unavailable right now, I'm giving you a demo reply.
+Try asking about hive inspections, honey harvesting, or swarm prevention!`;
+}
+
+/**
+ * Get AI response without history
+ */
 exports.getAIResponse = async (message, userId, sessionId) => {
   try {
-    // Create conversation with the beekeeping context
     const messages = [
       { role: "system", content: BEEKEEPING_KNOWLEDGE },
       { role: "user", content: message }
     ];
 
-    // Get completion from OpenAI
     const completion = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo", // or "gpt-4" if you have access
-      messages: messages,
+      model: "gpt-3.5-turbo", // or "gpt-4" if available
+      messages,
       max_tokens: 500,
       temperature: 0.7,
     });
-    
+
     const response = completion.choices[0].message.content;
-    
-    // Save to database
+
     await saveChatToDB(userId, sessionId, message, response);
-    
+
     return response;
   } catch (error) {
     console.error('Error getting AI response:', error);
-    
+
     // Handle specific OpenAI errors
-    if (error.status === 429) {
-      throw new Error('RATE_LIMIT_EXCEEDED');
-    } else if (error.code === 'insufficient_quota') {
-      throw new Error('QUOTA_EXCEEDED');
-    }
-    
-    throw new Error('Failed to get AI response');
+    if (error.status === 429) throw new Error('RATE_LIMIT_EXCEEDED');
+    if (error.code === 'insufficient_quota') throw new Error('QUOTA_EXCEEDED');
+
+    // Fallback mock response
+    const mock = getMockResponse(message);
+    await saveChatToDB(userId, sessionId, message, mock);
+    return mock;
   }
 };
 
-// Function to get chat response with conversation history
+/**
+ * Get AI response with history
+ */
 exports.getAIResponseWithHistory = async (message, userId, sessionId) => {
   try {
-    // Get conversation history
     let chat = await Chat.findOne({ userId, sessionId });
-    
-    // Prepare messages array with system prompt
-    const messages = [
-      { role: "system", content: BEEKEEPING_KNOWLEDGE }
-    ];
-    
-    // Add conversation history if exists
+
+    const messages = [{ role: "system", content: BEEKEEPING_KNOWLEDGE }];
+
     if (chat && chat.messages.length > 0) {
       chat.messages.forEach(msg => {
         messages.push({ role: msg.role, content: msg.content });
       });
     }
-    
-    // Add the new message
+
     messages.push({ role: "user", content: message });
-    
-    // Get completion from OpenAI
+
     const completion = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
-      messages: messages,
+      messages,
       max_tokens: 500,
       temperature: 0.7,
     });
-    
+
     const response = completion.choices[0].message.content;
-    
-    // Save to database
+
     await saveChatToDB(userId, sessionId, message, response);
-    
+
     return response;
   } catch (error) {
     console.error('Error getting AI response with history:', error);
-    
-    if (error.status === 429) {
-      throw new Error('RATE_LIMIT_EXCEEDED');
-    } else if (error.code === 'insufficient_quota') {
-      throw new Error('QUOTA_EXCEEDED');
-    }
-    
-    throw new Error('Failed to get AI response');
+
+    if (error.status === 429) throw new Error('RATE_LIMIT_EXCEEDED');
+    if (error.code === 'insufficient_quota') throw new Error('QUOTA_EXCEEDED');
+
+    // Fallback mock response
+    const mock = getMockResponse(message);
+    await saveChatToDB(userId, sessionId, message, mock);
+    return mock;
   }
 };
 
+/**
+ * Save chat to MongoDB
+ */
 async function saveChatToDB(userId, sessionId, message, response) {
   let chat = await Chat.findOne({ userId, sessionId });
-  
+
   if (!chat) {
-    // Create a title for the chat session based on the first message
     const title = message.length > 30 ? message.substring(0, 30) + '...' : message;
-    
-    chat = new Chat({ 
-      userId, 
-      sessionId, 
+
+    chat = new Chat({
+      userId,
+      sessionId,
       messages: [],
       title
     });
   }
-  
+
   chat.messages.push({ role: 'user', content: message });
   chat.messages.push({ role: 'assistant', content: response });
   await chat.save();

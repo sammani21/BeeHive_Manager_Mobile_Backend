@@ -5,27 +5,27 @@ const {
   createTask,
   updateTask,
   deleteTask,
-  getTask
+  getTask,
 } = require('../controller/taskController');
 
 const router = express.Router();
 
-// All routes are protected and require authentication
+// All routes require authentication
 router.use(auth);
 
-// Get all tasks for the authenticated beekeeper
+// Fetch all tasks for authenticated beekeeper
 router.get('/my-tasks', getMyTasks);
 
-// Create a new task
+// Create task
 router.post('/', createTask);
 
-// Get a single task
+// Get single task by ID
 router.get('/:id', getTask);
 
-// Update a task
+// Update task by ID
 router.patch('/:id', updateTask);
 
-// Delete a task
+// Delete task by ID
 router.delete('/:id', deleteTask);
 
 module.exports = router;
