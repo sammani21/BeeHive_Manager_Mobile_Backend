@@ -65,31 +65,31 @@ exports.mockChat = async (req, res) => {
       const lowerMsg = message.toLowerCase();
 
       if (lowerMsg.includes('hive') && lowerMsg.includes('inspection')) {
-        return '🐝 (Demo) For hive inspections, check for brood health, bee activity, and signs of disease. Inspect weekly during peak season!';
+        return '🐝 For hive inspections, check for brood health, bee activity, and signs of disease. Inspect weekly during peak season!';
       }
 
       if (lowerMsg.includes('honey') && (lowerMsg.includes('harvest') || lowerMsg.includes('production'))) {
-        return '🍯 (Demo) Honey harvesting is best done when frames are 80% capped. Use gentle extraction methods to avoid harming the bees.';
+        return '🍯 Honey harvesting is best done when frames are 80% capped. Use gentle extraction methods to avoid harming the bees.';
       }
 
       if (lowerMsg.includes('swarm')) {
-        return '🐝 (Demo) To prevent swarming, regularly monitor queen cells, provide enough space, and split hives if necessary.';
+        return '🐝 To prevent swarming, regularly monitor queen cells, provide enough space, and split hives if necessary.';
       }
 
       if (lowerMsg.includes('bee') && lowerMsg.includes('disease')) {
-        return '🩺 (Demo) Common bee diseases include Varroa mites, Nosema, and American Foulbrood. Maintain hive hygiene and inspect regularly.';
+        return '🩺 Common bee diseases include Varroa mites, Nosema, and American Foulbrood. Maintain hive hygiene and inspect regularly.';
       }
 
       if (lowerMsg.includes('feeding') || lowerMsg.includes('nutrition')) {
-        return '🍯 (Demo) Feed bees sugar syrup in early spring or during nectar dearth. Pollen patties can supplement protein needs.';
+        return '🍯 Feed bees sugar syrup in early spring or during nectar dearth. Pollen patties can supplement protein needs.';
       }
 
       if (lowerMsg.includes('queen')) {
-        return '👑 (Demo) Queen health is critical. Check for brood pattern, presence of eggs, and overall activity. Replace if failing.';
+        return '👑 Queen health is critical. Check for brood pattern, presence of eggs, and overall activity. Replace if failing.';
       }
 
       // Generic fallback
-      return `🐝 (Demo) BeeBuddy here! I got your question: "${message}". Try asking me about hive inspections, honey harvesting, swarm prevention, bee diseases, or feeding!`;
+      return `🐝 BeeBuddy here! I got your question: "${message}". Try asking me about hive inspections, honey harvesting, swarm prevention, bee diseases, or feeding!`;
     }
 
     const mockResponse = getMockResponse(message);
