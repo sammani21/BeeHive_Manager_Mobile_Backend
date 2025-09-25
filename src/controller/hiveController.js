@@ -236,59 +236,6 @@ const generateHiveRecommendation = (hiveData) => {
     return recommendations.join('\n\n');
 };
 
-// Update hive
-// exports.updateHive = tryCatch(async (req, res) => {
-//   try {
-//     // Check if user is authenticated
-//     if (!req.user) {
-//       return res.status(401).json({ 
-//         status: false,
-//         statusCode: 401, 
-//         msg: "Authentication required" 
-//       });
-//     }
-
-//     // Find beekeeper
-//     const beekeeper = await BeekeeperModel.findOne({ username: req.user.username });
-//     if (!beekeeper) {
-//       return res.status(404).json({ 
-//         status: false,
-//         statusCode: 404, 
-//         msg: "Beekeeper not found" 
-//       });
-//     }
-
-//     // Find and update hive, ensuring it belongs to the current beekeeper
-//     const hive = await Hive.findOneAndUpdate(
-//       { _id: req.params.id, beekeeper: beekeeper._id }, // Ensure ownership
-//       { ...req.body, updatedAt: new Date() },
-//       { new: true, runValidators: true }
-//     ).populate('beekeeper', 'firstName lastName email username');
-
-//     if (!hive) {
-//       return res.status(404).json({ 
-//         status: false,
-//         statusCode: 404, 
-//         msg: "Hive not found or access denied" 
-//       });
-//     }
-
-//     res.status(200).json({ 
-//       status: true, 
-//       statusCode: 200,
-//       msg: "Hive updated successfully",
-//       data: hive 
-//     });
-//   } catch (error) {
-//     console.error('Error updating hive:', error);
-//     res.status(400).json({ 
-//       status: false,
-//       statusCode: 400,
-//       msg: "Error updating hive",
-//       error: error.message 
-//     });
-//   }
-// });
 
 // Update hive
 exports.updateHive = tryCatch(async (req, res) => {
