@@ -237,6 +237,60 @@ const generateHiveRecommendation = (hiveData) => {
 };
 
 // Update hive
+// exports.updateHive = tryCatch(async (req, res) => {
+//   try {
+//     // Check if user is authenticated
+//     if (!req.user) {
+//       return res.status(401).json({ 
+//         status: false,
+//         statusCode: 401, 
+//         msg: "Authentication required" 
+//       });
+//     }
+
+//     // Find beekeeper
+//     const beekeeper = await BeekeeperModel.findOne({ username: req.user.username });
+//     if (!beekeeper) {
+//       return res.status(404).json({ 
+//         status: false,
+//         statusCode: 404, 
+//         msg: "Beekeeper not found" 
+//       });
+//     }
+
+//     // Find and update hive, ensuring it belongs to the current beekeeper
+//     const hive = await Hive.findOneAndUpdate(
+//       { _id: req.params.id, beekeeper: beekeeper._id }, // Ensure ownership
+//       { ...req.body, updatedAt: new Date() },
+//       { new: true, runValidators: true }
+//     ).populate('beekeeper', 'firstName lastName email username');
+
+//     if (!hive) {
+//       return res.status(404).json({ 
+//         status: false,
+//         statusCode: 404, 
+//         msg: "Hive not found or access denied" 
+//       });
+//     }
+
+//     res.status(200).json({ 
+//       status: true, 
+//       statusCode: 200,
+//       msg: "Hive updated successfully",
+//       data: hive 
+//     });
+//   } catch (error) {
+//     console.error('Error updating hive:', error);
+//     res.status(400).json({ 
+//       status: false,
+//       statusCode: 400,
+//       msg: "Error updating hive",
+//       error: error.message 
+//     });
+//   }
+// });
+
+// Update hive
 exports.updateHive = tryCatch(async (req, res) => {
   try {
     // Check if user is authenticated
@@ -258,14 +312,13 @@ exports.updateHive = tryCatch(async (req, res) => {
       });
     }
 
-    // Find and update hive, ensuring it belongs to the current beekeeper
-    const hive = await Hive.findOneAndUpdate(
-      { _id: req.params.id, beekeeper: beekeeper._id }, // Ensure ownership
-      { ...req.body, updatedAt: new Date() },
-      { new: true, runValidators: true }
-    ).populate('beekeeper', 'firstName lastName email username');
+    // Find the hive first to get current data
+    const existingHive = await Hive.findOne({ 
+      _id: req.params.id, 
+      beekeeper: beekeeper._id 
+    });
 
-    if (!hive) {
+    if (!existingHive) {
       return res.status(404).json({ 
         status: false,
         statusCode: 404, 
@@ -273,11 +326,52 @@ exports.updateHive = tryCatch(async (req, res) => {
       });
     }
 
+    // Update hive
+    const hive = await Hive.findOneAndUpdate(
+      { _id: req.params.id, beekeeper: beekeeper._id },
+      { ...req.body, updatedAt: new Date() },
+      { new: true, runValidators: true }
+    ).populate('beekeeper', 'firstName lastName email username');
+
+    // Generate new recommendation based on updated hive data
+    const recommendationText = generateHiveRecommendation({
+      ...existingHive.toObject(), // existing data
+      ...req.body // updated data
+    });
+
+    // Save the new recommendation
+    const recommendation = new Recommendation({
+      hiveId: hive._id,
+      beekeeperId: beekeeper._id,
+      recommendations: recommendationText,
+      triggeredBy: 'update'
+    });
+    await recommendation.save();
+
+    // Send email notification about the update and new recommendation
+    const beekeeperEmail = req.user.email || beekeeper.email;
+    await sendEmail(beekeeperEmail, 'Hive Updated Successfully',
+      `Dear ${beekeeper.firstName || 'Beekeeper'},
+      
+      Your hive has been updated successfully!
+      
+      Hive Details:
+      - Hive ID: ${hive._id}
+      - Location: ${hive.location || 'Not specified'}
+      
+      New Recommendation: ${recommendationText}
+      
+      Best regards,
+      BeeHive Manager Team`);
+
     res.status(200).json({ 
       status: true, 
       statusCode: 200,
       msg: "Hive updated successfully",
-      data: hive 
+      data: {
+        hive: hive,
+        recommendation: recommendationText
+      }
     });
   } catch (error) {
     console.error('Error updating hive:', error);
